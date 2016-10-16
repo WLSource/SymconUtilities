@@ -1,6 +1,6 @@
 <?
-	class Utilities extends IPSModule
-	{
+	class SymconUtilities extends IPSModule
+	{ 
 		public function Create() 
 		{
 			//Never delete this line!
