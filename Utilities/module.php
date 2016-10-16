@@ -13,12 +13,7 @@
 			parent::ApplyChanges();
 		}
 		
-		public function test()
-		{
-			echo "test";
-			
-		}
-		/*
+		
 		public function GetVariableIdByName($spezName)
 		{
 		   $alleVariablen = IPS_GetVariableList();
@@ -143,7 +138,6 @@
 				}
 			}
 		}
-		*/
 
 		
 		protected function SendDebug($Message, $Data, $Format)
