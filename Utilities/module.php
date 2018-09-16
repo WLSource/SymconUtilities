@@ -254,6 +254,20 @@
 			}
 		}
 		
+		// Removes all Events from under spezParentId
+		public function DeleteAllEvents($spezParentId)
+		{
+			$catChildIds = IPS_GetChildrenIDs($spezParentId);
+			for($i = 0; $i < count($catChildIds); $i++)
+			{
+			   // Check if the id belongs to a link
+			   if (IPS_LinkExists($catChildIds[$i]))
+			   {
+				  IPS_DeleteEvent($catChildIds[$i]);
+			   }
+			}
+		}
+		
 		public function DeleteAllVariablesInInstance($spezInstanceId)
 		{
 			// First, delete all varialbes
@@ -300,18 +314,6 @@
 		}
 		
 
-
-		public function CreateEventTrigger($EventName, $VarID, $ParentID, $EventTyp) 
-		{
-			$eid = @IPS_GetEventIDByName($EventName, $ParentID);
-			if (is_numeric($eid) == false) {
-				$eid = IPS_CreateEvent(0);
-				IPS_SetEventTrigger($eid, $EventTyp, $VarID);
-				IPS_SetParent($eid, $ParentID);
-				IPS_SetName($eid, $EventName);
-				IPS_SetEventActive($eid, true);
-			}
-		}
 	
 	}
 ?>
