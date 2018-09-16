@@ -138,7 +138,8 @@
 				}
 			}
 		}
-				private function CalcProcessValues($spezData)
+		
+		private function CalcProcessValues($spezData)
 		{
 			// temperature = tempValue / 250 * 40 °C
 			$temperature = floatval($spezData->{'DataByte1'}); 
@@ -238,5 +239,79 @@
 			    parent::SendDebug($Message, $Data, $Format);
 			}
 		} 
+		
+		// Removes all Links from under spezParentId
+		public function DeleteAllLinks($spezParentId)
+		{
+			$catChildIds = IPS_GetChildrenIDs($spezParentId);
+			for($i = 0; $i < count($catChildIds); $i++)
+			{
+			   // Check if the id belongs to a link
+			   if (IPS_LinkExists($catChildIds[$i]))
+			   {
+				  IPS_DeleteLink($catChildIds[$i]);
+			   }
+			}
+		}
+		
+		public function DeleteAllVariablesInInstance($spezInstanceId)
+		{
+			// First, delete all varialbes
+			$instanceChildIds = IPS_GetChildrenIDs($spezInstanceId);
+			for($i = 0; $i < count($instanceChildIds); $i++)
+			{
+			   // Check if the id belongs to a variable
+			   if (IPS_VariableExists($instanceChildIds[$i]))
+			   {
+				  IPS_DeleteVariable($instanceChildIds[$i]);
+			   }
+			}
+		}
+		
+		public function AddTextToParent($spezText, $spezName, $spezInstanceId)
+		{
+			$StatusTextId = IPS_CreateVariable(3);
+			IPS_SetParent($StatusTextId, $spezInstanceId);
+			IPS_SetName($StatusTextId, $spezName);
+			SetValueString($StatusTextId, $spezText);
+		}
+		
+		public function AddLinkToParent($spezText, $spezParentId, $spezTargetId)
+		{
+			// Anlegen eines neuen Links
+			$linkID = IPS_CreateLink();             // Link anlegen
+			IPS_SetName($linkID, $spezText); 		// Link benennen
+			IPS_SetParent($linkID, $spezParentId); // Link einsortieren unter dem Objekt mit der ID "12345"
+			IPS_SetLinkTargetID($linkID, $spezTargetId);    // Link verknüpfen
+		
+		}
+		
+		public function AddDummyModuleInstance($spezText, $spezParentId)
+		{
+			// Create Status Instance als DummyModul
+			$InstanceId = IPS_GetInstanceIDByName($spezText, $spezParentId);
+			if ($InstanceId == 0)
+			{
+				$InstanceId = IPS_CreateInstance("{485D0419-BE97-4548-AA9C-C083EB82E61E}");
+				IPS_SetName($InstanceId, $spezText);
+				IPS_SetParent($InstanceId, $spezParentId);
+			}
+			return $InstanceId;
+		}
+		
+
+
+		public function CreateEventTrigger($EventName, $VarID, $ParentID, $EventTyp) 
+		{
+			$eid = @IPS_GetEventIDByName($EventName, $ParentID);
+			if (is_numeric($eid) == false) {
+				$eid = IPS_CreateEvent(0);
+				IPS_SetEventTrigger($eid, $EventTyp, $VarID);
+				IPS_SetParent($eid, $ParentID);
+				IPS_SetName($eid, $EventName);
+				IPS_SetEventActive($eid, true);
+			}
+		}
+	
 	}
 ?>
